@@ -14,27 +14,49 @@ class BlueBox(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = screen.get_width()/2
         self.rect.centery = screen.get_height()/2
+        self.MAXSPEED = 10
         self.dx = 0
-        self.dy = 10
+        self.dy = 0
 
     def checkKeys(self):
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    self.dx = 10;
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_LEFT]:
+            if keys[pygame.K_RIGHT]:
+                self.dx = self.MAXSPEED
+            elif keys[pygame.K_LEFT]:
+                self.dx = -self.MAXSPEED
+        else:
+            self.dx = 0
+        if keys[pygame.K_UP] or keys[pygame.K_DOWN]:
+            if keys[pygame.K_UP]:
+                self.dy = -self.MAXSPEED
+            elif keys[pygame.K_DOWN]:
+                self.dy = self.MAXSPEED
+        else:
+            self.dy = 0
+        if keys[pygame.K_SPACE]:
+            self.dx = 0
+            self.dy = 0
 
-    def update(self):
+    def moveBox(self):
         self.rect.centerx += self.dx
+        self.rect.centery += self.dy
+
+    def checkBounds(self):
         if self.rect.right > screen.get_width():
             self.rect.left = 0
         elif self.rect.left < 0:
             self.rect.right = screen.get_width()
 
-        self.rect.centery += self.dy
         if self.rect.bottom > screen.get_height():
             self.rect.top = 0
         elif self.rect.top < 0:
             self.rect.bottom = screen.get_height()
+
+    def update(self):
+        self.checkKeys()
+        self.moveBox()
+        self.checkBounds()
 
 def main():
     pygame.display.set_caption("Low Level Game Demo")
@@ -57,22 +79,6 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     keepGoing = False
-                if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
-                    if event.key == pygame.K_RIGHT:
-                        playerBox.dx = 10;
-                    elif event.key == pygame.K_LEFT:
-                        playerBox.dx = -10;
-                else:
-                    playerBox.dx = 0;
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    if event.key == pygame.K_UP:
-                        playerBox.dy = -10;
-                    elif event.key == pygame.K_DOWN:
-                        playerBox.dy = 10;
-                else:
-                    playerBox.dy = 0;
-
-        ##playerBox.checkKeys()
 
         allSprites.clear(screen, background)
         allSprites.update()
