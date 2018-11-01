@@ -1,6 +1,6 @@
 """ lowLevelGame.py """
 
-import pygame
+import pygame, random
 pygame.init()
 
 screen = pygame.display.set_mode((640, 480))
@@ -12,11 +12,14 @@ class BlueBox(pygame.sprite.Sprite):
         self.image = self.image.convert()
         self.image.fill((0, 0, 255))
         self.rect = self.image.get_rect()
+
         self.rect.centerx = screen.get_width()/2
         self.rect.centery = screen.get_height()/2
         self.MAXSPEED = 10
         self.dx = 0
         self.dy = 0
+        #self.collideRight = False
+        #self.collideLeft = False
 
     def checkKeys(self):
         keys = pygame.key.get_pressed()
@@ -58,6 +61,25 @@ class BlueBox(pygame.sprite.Sprite):
         self.moveBox()
         self.checkBounds()
 
+    def reset(self):
+        return 0
+
+class RedBox(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((50, 50))
+        self.image = self.image.convert()
+        self.image.fill((255, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.centerx = random.randint(0, screen.get_width())
+        self.rect.centery = random.randint(0, screen.get_height())
+
+    def reset(self):
+        self.rect.bottom = 0
+
+    def update(self):
+        return 0
+
 def main():
     pygame.display.set_caption("Low Level Game Demo")
 
@@ -67,7 +89,11 @@ def main():
     screen.blit(background, (0,0))
 
     playerBox = BlueBox()
-    allSprites = pygame.sprite.Group(playerBox)
+    redBoxes = []
+    for i in range(10):
+        redBoxes.append(RedBox())
+
+    allSprites = pygame.sprite.Group(playerBox, redBoxes)
 
     clock = pygame.time.Clock()
     keepGoing = True
@@ -79,6 +105,10 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     keepGoing = False
+
+        for i in range(len(redBoxes)):
+            if playerBox.rect.colliderect(redBoxes[i].rect):
+                redBoxes[i].reset()
 
         allSprites.clear(screen, background)
         allSprites.update()
