@@ -3,19 +3,19 @@
 import pygame, random
 pygame.init()
 
-screen = pygame.display.set_mode((640, 480))
+screen = pygame.display.set_mode((720, 720))
 
 class BlueBox(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((50, 50))
+        self.image = pygame.Surface((32, 32))
         self.image = self.image.convert()
         self.image.fill((0, 0, 255))
         self.rect = self.image.get_rect()
 
         self.rect.centerx = screen.get_width()/2
         self.rect.centery = screen.get_height()/2
-        self.MAXSPEED = 10
+        self.MAXSPEED = 8
         self.dx = 0
         self.dy = 0
         #self.collideRight = False
@@ -67,7 +67,7 @@ class BlueBox(pygame.sprite.Sprite):
 class RedBox(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((50, 50))
+        self.image = pygame.Surface((32, 32))
         self.image = self.image.convert()
         self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
@@ -80,12 +80,23 @@ class RedBox(pygame.sprite.Sprite):
     def update(self):
         return 0
 
+class Score(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.points = 0
+        self.font = pygame.font.SysFont("None", 50)
+
+    def update(self):
+        self.text = "Score: %d" % (self.points)
+        self.image = self.font.render(self.text, 1, (255, 255, 255))
+        self.rect = self.image.get_rect()
+
 def main():
     pygame.display.set_caption("Low Level Game Demo")
 
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((255, 255, 255))
+    background.fill((0, 0, 0))
     screen.blit(background, (0,0))
 
     playerBox = BlueBox()
@@ -93,7 +104,10 @@ def main():
     for i in range(10):
         redBoxes.append(RedBox())
 
+    score = Score()
+
     allSprites = pygame.sprite.Group(playerBox, redBoxes)
+    scoreSprite = pygame.sprite.Group(score)
 
     clock = pygame.time.Clock()
     keepGoing = True
@@ -109,10 +123,16 @@ def main():
         for i in range(len(redBoxes)):
             if playerBox.rect.colliderect(redBoxes[i].rect):
                 redBoxes[i].reset()
+                score.points += 1
 
         allSprites.clear(screen, background)
+        scoreSprite.clear(screen, background)
+
         allSprites.update()
+        scoreSprite.update()
+
         allSprites.draw(screen)
+        scoreSprite.draw(screen)
 
         pygame.display.flip()
 
