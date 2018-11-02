@@ -1,6 +1,6 @@
 """ lowLevelGame.py """
 
-import pygame, random
+import pygame, random, math
 pygame.init()
 
 screen = pygame.display.set_mode((720, 720))
@@ -8,10 +8,13 @@ screen = pygame.display.set_mode((720, 720))
 class BlueBox(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((32, 32))
-        self.image = self.image.convert()
-        self.image.fill((0, 0, 255))
+        #self.image = pygame.Surface((32, 32))
+        self.imageMaster = pygame.image.load("SpaceShipsbyScrittl/player_ship.png")
+        self.imageMaster = self.imageMaster.convert()
+        self.image = self.imageMaster
+        #self.image.fill((0, 0, 255))
         self.rect = self.image.get_rect()
+        self.dir = 0
 
         self.rect.centerx = screen.get_width()/2
         self.rect.centery = screen.get_height()/2
@@ -26,15 +29,19 @@ class BlueBox(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT] or keys[pygame.K_LEFT]:
             if keys[pygame.K_RIGHT]:
                 self.dx = self.MAXSPEED
+                #self.dir = 270
             elif keys[pygame.K_LEFT]:
                 self.dx = -self.MAXSPEED
+                #self.dir = 90
         else:
             self.dx = 0
         if keys[pygame.K_UP] or keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
                 self.dy = -self.MAXSPEED
+                #self.dir = 0
             elif keys[pygame.K_DOWN]:
                 self.dy = self.MAXSPEED
+                #self.dir = 180
         else:
             self.dy = 0
         if keys[pygame.K_SPACE]:
@@ -67,8 +74,19 @@ class BlueBox(pygame.sprite.Sprite):
         elif self.rect.top < 0:
             self.rect.bottom = screen.get_height()
 
+    def rotateImage(self):
+        if self.dx != 0 or self.dy !=0:
+            radianNum = math.atan2(-self.dx, -self.dy)
+            self.dir = math.degrees(radianNum)
+
+        oldCenter = self.rect.center
+        self.image = pygame.transform.rotate(self.imageMaster, self.dir)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldCenter
+
     def update(self):
         self.checkKeys()
+        self.rotateImage()
         self.moveBox()
         self.checkBounds()
 
@@ -78,12 +96,16 @@ class BlueBox(pygame.sprite.Sprite):
 class RedBox(pygame.sprite.Sprite):
     def __init__(self, player, goal, powerUp):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((32, 32))
+        #self.image = pygame.Surface((32, 32))
+        self.imageMaster = pygame.image.load("SpaceShipsbyScrittl/enemy_2.png")
+        self.imageMaster = self.imageMaster.convert()
+        self.image = self.imageMaster
         self.image = self.image.convert()
-        self.image.fill((255, 0, 0))
+        #self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.centerx = 0
         self.rect.centery = 0
+        self.dir = 0
         self.player = player
         self.powerUp = powerUp
         self.goal = goal
@@ -117,8 +139,21 @@ class RedBox(pygame.sprite.Sprite):
             if self.rect.colliderect(self.goal.rect):
                 placingBox = True
 
-    #def update(self):
-        #return 0
+
+    def facePlayer(self):
+        sideX = self.player.rect.centerx - self.rect.centerx
+        sideY = self.player.rect.centery - self.rect.centery
+        radianNum = math.atan2(sideX, sideY)
+        self.dir = math.degrees(radianNum)
+
+        oldCenter = self.rect.center
+        self.image = pygame.transform.rotate(self.imageMaster, self.dir)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldCenter
+
+    def update(self):
+        self.facePlayer()
+
 
 class YellowBox(pygame.sprite.Sprite):
     def __init__(self):
@@ -231,8 +266,8 @@ def startScreen(score, highScore):
     insFont = pygame.font.SysFont(None, 50)
     insLabels = []
     instructions = (
-    "High score: %d         Last score: %d" % (highScore, score) ,
-    "",
+    "High score: %d         Last score: %d" % (highScore, score),
+    ""
     "Instructions:  You are a Blue Box and",
     "your goal is to reach the Yellow Box.",
     "Be careful, contact with Red Boxes",
