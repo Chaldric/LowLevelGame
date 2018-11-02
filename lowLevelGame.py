@@ -209,9 +209,9 @@ def game():
 
         pygame.display.flip()
 
-    return 0
+    return score.points
 
-def startScreen():
+def startScreen(score, highScore):
     pygame.display.set_caption("Low Level Game Demo")
 
     background = pygame.Surface(screen.get_size())
@@ -227,6 +227,25 @@ def startScreen():
 
     allSprites = pygame.sprite.Group(playerBox, goalBox, redBox)
     #scoreSprite = pygame.sprite.Group(score)
+
+    insFont = pygame.font.SysFont(None, 50)
+    insLabels = []
+    instructions = (
+    "High score: %d         Last score: %d" % (highScore, score) ,
+    "",
+    "Instructions:  You are a Blue Box and",
+    "your goal is to reach the Yellow Box.",
+    "Be careful, contact with Red Boxes",
+    "will kill you, ending your adventure!",
+    "",
+    "Use the arrow keys to move around.",
+    "",
+    "Press Space to start, escape to quit..."
+    )
+
+    for line in instructions:
+        tempLabel = insFont.render(line, 1, (255, 255, 255))
+        insLabels.append(tempLabel)
 
     clock = pygame.time.Clock()
     showScoreScreen = True
@@ -259,16 +278,23 @@ def startScreen():
         allSprites.draw(screen)
         #scoreSprite.draw(screen)
 
+        for i in range(len(insLabels)):
+            screen.blit(insLabels[i], (50, 30*i))
+
         pygame.display.flip()
 
     return donePlaying
 
 def main():
     donePlaying = False
+    score = 0
+    highScore = 0
     while not donePlaying:
-        donePlaying = startScreen()
+        donePlaying = startScreen(score, highScore)
         if not donePlaying:
-            game()
+            score = game()
+        if score > highScore:
+            highScore = score
 
 if __name__ == "__main__":
     main()
