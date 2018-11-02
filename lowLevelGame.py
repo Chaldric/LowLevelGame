@@ -90,21 +90,35 @@ class RedBox(pygame.sprite.Sprite):
         self.reset()
 
     def reset(self):
-        keepGoing = True
-        while keepGoing:
+        placingBox = True
+        while placingBox:
             self.rect.centerx = random.randint(0, screen.get_width())
             self.rect.centery = random.randint(0, screen.get_height())
 
-            keepGoing = False
+            placingBox = False
             if self.rect.colliderect(self.player.rect):
-                keepGoing = True
+                placingBox = True
             if self.rect.colliderect(self.powerUp.rect):
-                keepGoing = True
+                placingBox = True
             if self.rect.colliderect(self.goal.rect):
-                keepGoing = True
+                placingBox = True
 
-    def update(self):
-        return 0
+    def resetSpec(self, left, right, top, bottom):
+        placingBox = True
+        while placingBox:
+            self.rect.centerx = random.randint(left, right)
+            self.rect.centery = random.randint(top, bottom)
+
+            placingBox = False
+            if self.rect.colliderect(self.player.rect):
+                placingBox = True
+            if self.rect.colliderect(self.powerUp.rect):
+                placingBox = True
+            if self.rect.colliderect(self.goal.rect):
+                placingBox = True
+
+    #def update(self):
+        #return 0
 
 class YellowBox(pygame.sprite.Sprite):
     def __init__(self):
@@ -121,6 +135,9 @@ class YellowBox(pygame.sprite.Sprite):
         self.rect.centerx = random.randint(0, screen.get_width())
         self.rect.centery = random.randint(0, screen.get_height())
 
+    def resetSpec(self, left, right, top, bottom):
+        self.rect.centerx = random.randint(left, right)
+        self.rect.centery = random.randint(top, bottom)
 
 class Score(pygame.sprite.Sprite):
     def __init__(self):
@@ -139,7 +156,7 @@ def buildRedBoxes(numboxes, playerBox, goalBox, powerUp):
         redBoxes.append(RedBox(playerBox, goalBox, powerUp))
     return redBoxes
 
-def main():
+def game():
     NUMREDBOXES = 10
     pygame.display.set_caption("Low Level Game Demo")
 
@@ -158,19 +175,20 @@ def main():
     scoreSprite = pygame.sprite.Group(score)
 
     clock = pygame.time.Clock()
-    keepGoing = True
-    while keepGoing:
+    playingGame = True
+    while playingGame:
         clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                keepGoing = False
+                playingGame = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    keepGoing = False
+                    playingGame = False
 
         for i in range(len(redBoxes)):
             if playerBox.rect.colliderect(redBoxes[i].rect):
                 redBoxes[i].reset()
+                playingGame = False
 
         if playerBox.rect.colliderect(goalBox.rect):
             goalBox.reset()
@@ -190,6 +208,67 @@ def main():
         scoreSprite.draw(screen)
 
         pygame.display.flip()
+
+    return 0
+
+def startScreen():
+    pygame.display.set_caption("Low Level Game Demo")
+
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill((0, 0, 0))
+    screen.blit(background, (0,0))
+
+    playerBox = BlueBox()
+    goalBox = YellowBox()
+    redBox = RedBox(playerBox, goalBox, goalBox)
+    goalBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+    redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+
+    allSprites = pygame.sprite.Group(playerBox, goalBox, redBox)
+    #scoreSprite = pygame.sprite.Group(score)
+
+    clock = pygame.time.Clock()
+    showScoreScreen = True
+    while showScoreScreen:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                showScoreScreen = False
+                donePlaying = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    showScoreScreen = False
+                    donePlaying = True
+                if event.key == pygame.K_SPACE:
+                    showScoreScreen = False
+                    donePlaying = False
+
+        if playerBox.rect.colliderect(redBox.rect):
+            redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+
+        if playerBox.rect.colliderect(goalBox.rect):
+            goalBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+
+        allSprites.clear(screen, background)
+        #scoreSprite.clear(screen, background)
+
+        allSprites.update()
+        #scoreSprite.update(NUMREDBOXES)
+
+        allSprites.draw(screen)
+        #scoreSprite.draw(screen)
+
+        pygame.display.flip()
+
+    return donePlaying
+
+def main():
+    donePlaying = False
+    while not donePlaying:
+        donePlaying = startScreen()
+        if not donePlaying:
+            game()
 
 if __name__ == "__main__":
     main()
