@@ -9,6 +9,7 @@ class BlueBox(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         #self.image = pygame.Surface((32, 32))
+        #player_ship image found at https://opengameart.org/content/spaceship-set-32x32px
         self.imageMaster = pygame.image.load("SpaceShipsbyScrittl/player_ship.png")
         self.imageMaster = self.imageMaster.convert()
         self.image = self.imageMaster
@@ -29,19 +30,15 @@ class BlueBox(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT] or keys[pygame.K_LEFT]:
             if keys[pygame.K_RIGHT]:
                 self.dx = self.MAXSPEED
-                #self.dir = 270
             elif keys[pygame.K_LEFT]:
                 self.dx = -self.MAXSPEED
-                #self.dir = 90
         else:
             self.dx = 0
         if keys[pygame.K_UP] or keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
                 self.dy = -self.MAXSPEED
-                #self.dir = 0
             elif keys[pygame.K_DOWN]:
                 self.dy = self.MAXSPEED
-                #self.dir = 180
         else:
             self.dy = 0
         if keys[pygame.K_SPACE]:
@@ -97,10 +94,10 @@ class RedBox(pygame.sprite.Sprite):
     def __init__(self, player, goal, powerUp):
         pygame.sprite.Sprite.__init__(self)
         #self.image = pygame.Surface((32, 32))
+        #enemy_2 image found at https://opengameart.org/content/spaceship-set-32x32px
         self.imageMaster = pygame.image.load("SpaceShipsbyScrittl/enemy_2.png")
         self.imageMaster = self.imageMaster.convert()
         self.image = self.imageMaster
-        self.image = self.image.convert()
         #self.image.fill((255, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.centerx = 0
@@ -158,9 +155,12 @@ class RedBox(pygame.sprite.Sprite):
 class YellowBox(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((32, 32))
-        self.image = self.image.convert()
-        self.image.fill((255, 255, 0))
+        #self.image = pygame.Surface((32, 32))
+        #CristalvbyYolkati found at https://opengameart.org/content/green-cristal
+        self.imageMaster = pygame.image.load("CristalvbyYolkati.gif")
+        self.imageMaster = self.imageMaster.convert()
+        self.image = self.imageMaster
+        #self.image.fill((255, 255, 0))
         self.rect = self.image.get_rect()
         self.rect.centerx = 0
         self.rect.centery = 0
