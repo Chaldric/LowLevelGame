@@ -188,6 +188,7 @@ class Score(pygame.sprite.Sprite):
 
 class Sounds():
     def __init__(self):
+        # Sounds from https://opengameart.org/content/sound-effects-mini-pack15
         self.lose = pygame.mixer.Sound("SoundPackbyPhoenix1291/Lose/OGG/Lose2.ogg")
         self.explosion = pygame.mixer.Sound("SoundPackbyPhoenix1291/Explosion/OGG/Explosion2.ogg")
         self.shot = pygame.mixer.Sound("SoundPackbyPhoenix1291/Laser-weapon/OGG/Laser-weapon2.ogg")
