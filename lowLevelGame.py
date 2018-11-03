@@ -88,7 +88,8 @@ class BlueBox(pygame.sprite.Sprite):
         self.checkBounds()
 
     def reset(self):
-        return 0
+        self.rect.centerx = random.randint(0, screen.get_width())
+        self.rect.centery = random.randint(0, screen.get_height())
 
 class RedBox(pygame.sprite.Sprite):
     def __init__(self, player, goal, powerUp):
@@ -227,11 +228,12 @@ def game():
 
         if playerBox.rect.colliderect(goalBox.rect):
             goalBox.reset()
+            #playerBox.reset()
             NUMREDBOXES += 2
             redBoxes = buildRedBoxes(NUMREDBOXES, playerBox, goalBox, goalBox)
             allSprites.clear(screen, background)
             allSprites = pygame.sprite.Group(playerBox, goalBox, redBoxes)
-            score.points += 1
+            score.points += 10
 
         allSprites.clear(screen, background)
         scoreSprite.clear(screen, background)
@@ -263,15 +265,18 @@ def startScreen(score, highScore):
     allSprites = pygame.sprite.Group(playerBox, goalBox, redBox)
     #scoreSprite = pygame.sprite.Group(score)
 
-    insFont = pygame.font.SysFont(None, 50)
+    insFont = pygame.font.SysFont(None, 40)
     insLabels = []
     instructions = (
     "High score: %d         Last score: %d" % (highScore, score),
-    ""
-    "Instructions:  You are a Blue Box and",
-    "your goal is to reach the Yellow Box.",
-    "Be careful, contact with Red Boxes",
-    "will kill you, ending your adventure!",
+    "",
+    "Instructions:  You are an Alliance Fighter and",
+    "your goal is to travel across the galaxy to ",
+    "collect as many Green Gems as you can.",
+    "",
+    "Be careful, Alien spacecraft will block your path ",
+    "to the gem. Any contact will kill you, ending ",
+    "your adventure!",
     "",
     "Use the arrow keys to move around.",
     "",
@@ -299,10 +304,10 @@ def startScreen(score, highScore):
                     donePlaying = False
 
         if playerBox.rect.colliderect(redBox.rect):
-            redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+            redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.6, screen.get_height()*0.8)
 
         if playerBox.rect.colliderect(goalBox.rect):
-            goalBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
+            goalBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.6, screen.get_height()*0.8)
 
         allSprites.clear(screen, background)
         #scoreSprite.clear(screen, background)
