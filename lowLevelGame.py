@@ -186,6 +186,13 @@ class Score(pygame.sprite.Sprite):
         self.image = self.font.render(self.text, 1, (255, 255, 255))
         self.rect = self.image.get_rect()
 
+class Sounds():
+    def __init__(self):
+        self.lose = pygame.mixer.Sound("SoundPackbyPhoenix1291/Lose/OGG/Lose2.ogg")
+        self.explosion = pygame.mixer.Sound("SoundPackbyPhoenix1291/Explosion/OGG/Explosion2.ogg")
+        self.shot = pygame.mixer.Sound("SoundPackbyPhoenix1291/Laser-weapon/OGG/Laser-weapon2.ogg")
+        self.score = pygame.mixer.Sound("SoundPackbyPhoenix1291/1up/OGG/1up2.ogg")
+
 def buildRedBoxes(numboxes, playerBox, goalBox, powerUp):
     redBoxes = []
     for i in range(numboxes):
@@ -201,6 +208,7 @@ def game():
     background.fill((0, 0, 0))
     screen.blit(background, (0,0))
 
+    sound = Sounds()
     playerBox = BlueBox()
     goalBox = YellowBox()
     redBoxes = buildRedBoxes(NUMREDBOXES, playerBox, goalBox, goalBox)
@@ -223,10 +231,12 @@ def game():
 
         for i in range(len(redBoxes)):
             if playerBox.rect.colliderect(redBoxes[i].rect):
+                sound.lose.play()
                 redBoxes[i].reset()
                 playingGame = False
 
         if playerBox.rect.colliderect(goalBox.rect):
+            sound.score.play()
             goalBox.reset()
             #playerBox.reset()
             NUMREDBOXES += 2
@@ -256,6 +266,7 @@ def startScreen(score, highScore):
     background.fill((0, 0, 0))
     screen.blit(background, (0,0))
 
+    sound = Sounds()
     playerBox = BlueBox()
     goalBox = YellowBox()
     redBox = RedBox(playerBox, goalBox, goalBox)
@@ -263,7 +274,6 @@ def startScreen(score, highScore):
     redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.5, screen.get_height()*0.8)
 
     allSprites = pygame.sprite.Group(playerBox, goalBox, redBox)
-    #scoreSprite = pygame.sprite.Group(score)
 
     insFont = pygame.font.SysFont(None, 40)
     insLabels = []
@@ -304,19 +314,18 @@ def startScreen(score, highScore):
                     donePlaying = False
 
         if playerBox.rect.colliderect(redBox.rect):
+            sound.lose.play()
             redBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.6, screen.get_height()*0.8)
 
         if playerBox.rect.colliderect(goalBox.rect):
+            sound.score.play()
             goalBox.resetSpec(screen.get_width()*0.2, screen.get_width()*0.8, screen.get_height()*0.6, screen.get_height()*0.8)
 
         allSprites.clear(screen, background)
-        #scoreSprite.clear(screen, background)
 
         allSprites.update()
-        #scoreSprite.update(NUMREDBOXES)
 
         allSprites.draw(screen)
-        #scoreSprite.draw(screen)
 
         for i in range(len(insLabels)):
             screen.blit(insLabels[i], (50, 30*i))
